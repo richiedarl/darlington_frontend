@@ -4,7 +4,8 @@ import About from '@/components/About'
 import Projects from '@/components/Projects'
 import Services from '@/components/Services'
 import Skills from '@/components/Skills'
-import Contact from '@/app/contact/page'
+
+
 
 export default function Home() {
   return (
@@ -14,7 +15,6 @@ export default function Home() {
       <Projects />
       <Services />
       <Skills />
-      {/* <Contact /> */}
     </div>
   )
 }
