@@ -20,13 +20,33 @@ interface Organization {
 
 async function getOrganizations(): Promise<Organization[]> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/organizations`, {
-      next: { revalidate: 120 },
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL
+    
+    // If API URL is not configured, return empty array (shows "coming soon")
+    if (!apiUrl) {
+      console.warn('NEXT_PUBLIC_API_URL is not configured. Add it to .env.local')
+      return []
+    }
+
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+
+    const res = await fetch(`${apiUrl}/api/organizations`, {
+      signal: controller.signal,
+      next: { revalidate: 3600 }, // Cache for 1 hour
     })
-    if (!res.ok) return []
+    
+    clearTimeout(timeout)
+    
+    if (!res.ok) {
+      console.error(`API responded with status: ${res.status}`)
+      return []
+    }
+    
     const data = await res.json()
-    return data.data ?? data
-  } catch {
+    return data.data ?? data ?? []
+  } catch (error) {
+    console.error('Failed to fetch organizations:', error)
     return []
   }
 }
