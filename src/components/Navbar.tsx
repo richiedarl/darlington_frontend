@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
+import { useTheme } from 'next-themes'
 
 interface NavLink {
   href: string
@@ -11,8 +13,11 @@ interface NavLink {
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     const handleScroll = () => setScrolled(window.scrollY > 50)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
@@ -25,7 +30,34 @@ export default function Navbar() {
     { href: '/#services', label: 'Services' },
     { href: '/#skills', label: 'Skills' },
     { href: '/contact', label: 'Contact' },
+    { href: '/blog', label: 'Blog' },
+    { href: '/courses', label: 'Courses' },
   ]
+
+  // Debug log to check theme changes
+  useEffect(() => {
+    if (mounted) {
+      console.log('Current theme in Navbar:', theme)
+    }
+  }, [theme, mounted])
+
+  // Determine which logo to show based on theme
+  const logoSrc = mounted && theme === 'dark' 
+    ? '/images/logowhite.png' 
+    : '/images/logoblack.png'
+
+  // Show loading state while mounting to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <nav className="fixed top-0 w-full z-50 bg-white dark:bg-brand-black/90 py-3">
+        <div className="container-custom flex justify-between items-center">
+          <div className="relative w-21 h-21">
+            <div className="w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
+          </div>
+        </div>
+      </nav>
+    )
+  }
 
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
@@ -37,20 +69,20 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary
-           to-brand-dark rounded-xl flex items-center justify-center
-            shadow-lg group-hover:scale-105 transition-transform">
-            <span className="text-white font-bold text-xl">D</span>
-          </div>
-          <div>
-            <span className="text-xl font-bold text-brand-black dark:text-white">Darlington</span>
-            <span className="text-xl font-bold text-primary"> Okorie</span>
-            <span className="block text-xs text-gray-400 font-normal">DevdarlMedia</span>
+          <div className="relative w-21 h-21">
+            <Image
+              src={logoSrc}
+              alt="Darlington Okorie Logo"
+              fill
+              className="object-contain transition-transform group-hover:scale-105"
+              priority
+              key={theme} // Force re-render when theme changes
+            />
           </div>
         </Link>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex space-x-8">
+        <div className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -61,6 +93,14 @@ export default function Navbar() {
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
             </Link>
           ))}
+          
+          {/* View More Organizations Button */}
+          <Link
+            href="/organizations"
+            className="px-5 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all transform hover:scale-105 shadow-md font-medium"
+          >
+            View More Organizations
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -99,6 +139,15 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              
+              {/* View More Organizations Button in Mobile Menu */}
+              <Link
+                href="/organizations"
+                className="px-5 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all text-center mt-2 font-medium"
+                onClick={() => setIsOpen(false)}
+              >
+                View More Organizations
+              </Link>
             </div>
           </motion.div>
         )}
