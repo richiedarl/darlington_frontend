@@ -24,7 +24,7 @@ export default function Projects() {
       },
       {
         title: 'ToBest Healthcare',
-        url: 'https://tobesthealthcaresolutions.com',
+        url: 'https://tobesthealthcaresolutions.co.uk',
         description: 'Healthcare system for patient records, appointments, and role-based access',
         tags: ['Laravel', 'Healthcare', 'Role-based', 'Security']
       },
@@ -70,7 +70,7 @@ export default function Projects() {
       },
       {
         title: 'Maelis',
-        url: '#',
+        url: 'https://maelis.com',
         description: 'Custom business solution with integrated workflows and analytics',
         tags: ['Custom Development', 'Business', 'Analytics']
       }
