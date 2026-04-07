@@ -7,18 +7,21 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ThemeToggle from '@/components/ThemeToggle'
 
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-  variable: '--font-poppins',
-})
-
 const montserrat = Montserrat({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
   variable: '--font-montserrat',
+  weight: ['300', '400', '500', '600', '700'],
+  fallback: ['system-ui', 'sans-serif'],  // ← ADD THIS
+  preload: false,  // ← ADD THIS
 })
 
+const poppins = Poppins({
+  subsets: ['latin'],
+  variable: '--font-poppins',
+  weight: ['300', '400', '500', '600', '700', '800'],
+  fallback: ['system-ui', 'sans-serif'],  // ← ADD THIS
+  preload: false,  // ← ADD THIS
+})
 export const metadata: Metadata = {
   title: 'Darlington Okorie | Full-Stack Software Developer',
   description: 'Darlington Okorie - Full-Stack Software Developer specializing in React, Node.js, Laravel, and modern web technologies. Founder of DevdarlMedia.',

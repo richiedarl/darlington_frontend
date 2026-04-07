@@ -29,7 +29,7 @@ export default function Projects() {
         tags: ['Laravel', 'Healthcare', 'Role-based', 'Security']
       },
       {
-        title: 'Visionalive',
+        title: 'Vision Alive',
         url: 'https://visionalive.ng',
         description: 'High-end brand presence with custom CMS integration and e-commerce capabilities',
         tags: ['CMS', 'E-commerce', 'Performance']

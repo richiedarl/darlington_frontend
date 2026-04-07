@@ -161,6 +161,7 @@ export default function Hero() {
                     fill
                     priority
                     className="object-cover object-top"
+                    
                   />
 
                   {/* Fallback gradient shown behind image */}
