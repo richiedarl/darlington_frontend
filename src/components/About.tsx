@@ -77,7 +77,7 @@ export default function About() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // UPDATED: Full organizations list with new additions
+  // Full organizations list
   const organizations = useMemo(() => [
     { name: 'DevdarlMedia', role: 'Founder & Director', icon: Rocket, url: '#', featured: true, period: '2020 - Present' },
     { name: 'Vision Alive Foundation', role: 'CTO', icon: Heart, url: 'https://visionalive.ng', featured: true, period: '2021 - Present' },
@@ -116,14 +116,14 @@ export default function About() {
     { name: 'Express.js', color: 'bg-gray-500/10 text-gray-600 border-gray-500/20', level: 87 },
   ], [])
 
-  // UPDATED: Articles/Blog posts from CoderLegion and Dev.to
+  // Articles/Blog posts
   const articles = useMemo(() => [
     { title: 'Building Scalable Web Applications', platform: 'CoderLegion', date: '2024', url: 'https://coderlegion.com/user/Darlington%20Okorie', icon: BookOpen },
     { title: 'Laravel Best Practices for 2024', platform: 'Dev.to', date: '2024', url: 'https://dev.to/darlingtonokoriec', icon: BookOpen },
     { title: 'Getting Started with React and TypeScript', platform: 'CoderLegion', date: '2023', url: 'https://coderlegion.com/user/Darlington%20Okorie', icon: BookOpen },
   ], [])
 
-  // UPDATED: Volunteering (replaced Innovation Awards)
+  // Volunteering
   const volunteering = useMemo(() => [
     { 
       title: 'Technovation Girls', 
@@ -245,7 +245,7 @@ export default function About() {
                   <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/30 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -translate-x-full group-hover:translate-x-full" />
                   <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-60 animate-pulse" />
 
-                  {/* Photo Section */}
+                  {/* Photo Section - FIXED IMAGE PROPS */}
                   <div className="relative rounded-2xl overflow-hidden aspect-[4/5] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-brand-black dark:to-brand-dark">
                     {PROFILE_CONFIG.useImage && !imageError ? (
                       <>
@@ -258,12 +258,13 @@ export default function About() {
                           src={PROFILE_CONFIG.imageSrc}
                           alt={`${PROFILE_CONFIG.name} - ${PROFILE_CONFIG.title}`}
                           fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           className={`object-cover object-top transition-all duration-700 ${
                             imageLoading ? 'scale-110 blur-md' : 'scale-100 blur-0'
                           }`}
                           priority
-                          quality={90}
-                          onLoadingComplete={() => setImageLoading(false)}
+                          quality={75}
+                          onLoad={() => setImageLoading(false)}
                           onError={() => {
                             setImageError(true)
                             setImageLoading(false)
@@ -334,7 +335,7 @@ export default function About() {
                   <div>
                     <h3 className="text-xl font-bold text-brand-black dark:text-white mb-3">Who I Am</h3>
                     <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                      I'm <strong className="text-primary">Darlington Okorie</strong> <small>Also Known as Devdarl</small> — a full-stack software developer
+                      I'm <strong className="text-primary">Darlington Okorie</strong> <small className="text-gray-400">(Also Known as Devdarl)</small> — a full-stack software developer
                       passionate about building robust digital solutions. As the{' '}
                       <strong className="text-primary">Founder and Director of DevdarlMedia</strong>, I lead a client
                       services and tutorials agency dedicated to delivering premium tech solutions that drive business growth.
@@ -406,7 +407,7 @@ export default function About() {
                 </div>
               </motion.div>
 
-              {/* Volunteering Section - NEW (replaced achievements) */}
+              {/* Volunteering Section */}
               <motion.div variants={fadeInUp} className="bg-white dark:bg-white/5 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
