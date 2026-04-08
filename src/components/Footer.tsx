@@ -1,11 +1,23 @@
 'use client'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Mail, MapPin, Clock } from 'lucide-react'
+import { Mail, MapPin, Clock, CheckCircle, AlertCircle } from 'lucide-react'
 import { FaGithub, FaTwitter, FaLinkedin, FaFacebook, FaInstagram } from 'react-icons/fa'
+import { useState, FormEvent, useRef, useEffect } from 'react'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [message, setMessage] = useState('')
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Cleanup timeout
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [])
 
   const socialLinks = [
     { name: 'X (Twitter)', username: '@IamDevdarl', url: 'https://twitter.com/IamDevdarl', icon: FaTwitter, color: 'hover:bg-[#1DA1F2]' },
@@ -14,6 +26,79 @@ export default function Footer() {
     { name: 'Facebook', username: 'darlingtonOkoriec', url: 'https://facebook.com/darlingtonOkoriec', icon: FaFacebook, color: 'hover:bg-[#1877F2]' },
     { name: 'Instagram', username: 'darlingtonOkoriec', url: 'https://instagram.com/darlingtonOkoriec', icon: FaInstagram, color: 'hover:bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF]' },
   ]
+
+  const handleSubscribe = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    
+    if (!email || !email.includes('@')) {
+      setStatus('error')
+      setMessage('Please enter a valid email address')
+      timeoutRef.current = setTimeout(() => setStatus('idle'), 3000)
+      return
+    }
+
+    setStatus('loading')
+    setMessage('')
+
+    try {
+      // Replace YOUR_MAILCHIMP_U and YOUR_MAILCHIMP_ID with your actual Mailchimp values
+      // You can find these in your Mailchimp audience settings
+      const MAILCHIMP_U = process.env.NEXT_PUBLIC_MAILCHIMP_U
+      const MAILCHIMP_ID = process.env.NEXT_PUBLIC_MAILCHIMP_ID
+      
+      if (!MAILCHIMP_U || !MAILCHIMP_ID) {
+        // Fallback to API route if Mailchimp is not configured
+        const response = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+        })
+        
+        const data = await response.json()
+        
+        if (response.ok && data.success) {
+          setStatus('success')
+          setMessage('Thanks for subscribing! Check your email to confirm.')
+          setEmail('')
+        } else {
+          throw new Error(data.message || 'Subscription failed')
+        }
+      } else {
+        // Direct Mailchimp submission (bypasses your server)
+        const formData = new FormData()
+        formData.append('EMAIL', email)
+        formData.append('u', MAILCHIMP_U)
+        formData.append('id', MAILCHIMP_ID)
+        
+        const response = await fetch(
+          `https://gmail.us14.list-manage.com/subscribe/post?u=${MAILCHIMP_U}&id=${MAILCHIMP_ID}&f_id=00d0c2e1f0`,
+          {
+            method: 'POST',
+            mode: 'no-cors', // Required for Mailchimp direct submission
+            body: formData,
+          }
+        )
+        
+        // With no-cors, we can't check response status, so assume success
+        setStatus('success')
+        setMessage('Thanks for subscribing! Check your email to confirm.')
+        setEmail('')
+      }
+    } catch (error) {
+      console.error('Subscription error:', error)
+      setStatus('error')
+      setMessage('Something went wrong. Please try again later.')
+    }
+
+    // Clear status after 5 seconds
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    timeoutRef.current = setTimeout(() => {
+      setStatus('idle')
+      setMessage('')
+    }, 5000)
+  }
 
   return (
     <footer className="bg-gray-50 dark:bg-brand-black border-t border-primary/20 py-12 transition-colors duration-300">
@@ -39,7 +124,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                 <MapPin className="w-3 h-3 text-primary" />
-                <span>Nigeria</span>
+                <span>Nigeria / USA</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                 <Clock className="w-3 h-3 text-primary" />
@@ -87,7 +172,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Connect with Social Icons */}
+          {/* Connect with Social Icons & Newsletter */}
           <div>
             <h4 className="font-semibold mb-4 text-brand-black dark:text-white font-montserrat">Connect</h4>
             <div className="space-y-4">
@@ -115,22 +200,56 @@ export default function Footer() {
                 ))}
               </div>
               
-              {/* Newsletter Signup (Optional) */}
+              {/* Newsletter Signup with Mailchimp */}
               <div className="mt-4">
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Stay updated with my latest work</p>
-                <form className="flex gap-2" onSubmit={(e) => e.preventDefault()}>
-                  <input 
-                    type="email" 
-                    placeholder="Email address" 
-                    className="flex-1 px-3 py-2 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-brand-dark/60 focus:outline-none focus:border-primary"
-                  />
-                  <button 
-                    type="submit"
-                    className="px-3 py-2 text-xs bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors"
-                  >
-                    Subscribe
-                  </button>
+                <form onSubmit={handleSubscribe} className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <input 
+                      type="email" 
+                      name="EMAIL"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Email address" 
+                      required
+                      disabled={status === 'loading'}
+                      className="flex-1 px-3 py-2 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-brand-dark/60 focus:outline-none focus:border-primary disabled:opacity-50"
+                    />
+                    <button 
+                      type="submit"
+                      disabled={status === 'loading'}
+                      className="px-3 py-2 text-xs bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {status === 'loading' ? '...' : 'Subscribe'}
+                    </button>
+                  </div>
+                  
+                  {/* Status Messages */}
+                  {status === 'success' && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400"
+                    >
+                      <CheckCircle className="w-3 h-3" />
+                      <span>{message}</span>
+                    </motion.div>
+                  )}
+                  
+                  {status === 'error' && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400"
+                    >
+                      <AlertCircle className="w-3 h-3" />
+                      <span>{message}</span>
+                    </motion.div>
+                  )}
                 </form>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                  No spam, unsubscribe anytime.
+                </p>
               </div>
             </div>
           </div>

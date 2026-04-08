@@ -98,6 +98,10 @@ export default function Contact() {
 
   const labelClass = "block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1"
 
+  // Nigerian and US cities
+  const nigerianCities = ['Umuahia', 'Nsukka', 'Awka', 'Abuja', 'Portharcourt', 'Owerri', 'Lagos', 'Aba', 'Nassarawa']
+  const usLocations = ['Texas', 'California']
+
   return (
     <section id="contact" className="py-24 relative bg-white dark:bg-brand-black transition-colors duration-300 overflow-hidden">
       {/* Background decoration */}
@@ -168,6 +172,7 @@ export default function Contact() {
 
               {/* Contact Info Cards */}
               <div className="space-y-4">
+                {/* Email */}
                 <div className="flex items-center gap-4 group">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-110 transition-all duration-300">
                     <Mail className="w-5 h-5 text-primary" />
@@ -180,25 +185,54 @@ export default function Contact() {
                   </div>
                 </div>
 
+                {/* Phone */}
                 <div className="flex items-center gap-4 group">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-110 transition-all duration-300">
                     <Phone className="w-5 h-5 text-primary" />
                   </div>
                   <div>
                     <p className="text-xs text-gray-400 uppercase tracking-wider">Phone</p>
-                    <a href="tel:+2341234567890" className="text-brand-black dark:text-white hover:text-primary transition-colors font-medium">
-                      +234 (0) 123 456 7890
+                    <a href="tel:+2347013978510" className="text-brand-black dark:text-white hover:text-primary transition-colors font-medium">
+                      +234 (0) 701 397 8510
                     </a>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 group">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-110 transition-all duration-300">
+                {/* Location - Improved with categorized badges */}
+                <div className="flex items-start gap-4 group">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-110 transition-all duration-300 flex-shrink-0">
                     <MapPin className="w-5 h-5 text-primary" />
                   </div>
-                  <div>
-                    <p className="text-xs text-gray-400 uppercase tracking-wider">Location</p>
-                    <p className="text-brand-black dark:text-white font-medium">Nigeria</p>
+                  <div className="flex-1">
+                    <p className="text-xs text-gray-400 uppercase tracking-wider">Locations Served</p>
+                    <div className="mt-2 space-y-2">
+                      {/* Nigeria */}
+                      <div>
+                        <p className="text-xs font-semibold text-primary mb-1 flex items-center gap-1">
+                          <span>🇳🇬</span> Nigeria
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {nigerianCities.map((city) => (
+                            <span key={city} className="inline-block px-2 py-0.5 text-xs bg-primary/5 border border-primary/20 rounded-full text-brand-black dark:text-white">
+                              {city}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      {/* United States */}
+                      <div>
+                        <p className="text-xs font-semibold text-primary mb-1 flex items-center gap-1">
+                          <span>🇺🇸</span> United States
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {usLocations.map((state) => (
+                            <span key={state} className="inline-block px-2 py-0.5 text-xs bg-primary/5 border border-primary/20 rounded-full text-brand-black dark:text-white">
+                              {state}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
