@@ -1,4 +1,3 @@
-// src/app/layout.tsx
 import type { Metadata } from 'next'
 import { Poppins, Montserrat } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
@@ -11,17 +10,18 @@ const montserrat = Montserrat({
   subsets: ['latin'],
   variable: '--font-montserrat',
   weight: ['300', '400', '500', '600', '700'],
-  fallback: ['system-ui', 'sans-serif'],  // ← ADD THIS
-  preload: false,  // ← ADD THIS
+  fallback: ['system-ui', 'sans-serif'],
+  preload: false,
 })
 
 const poppins = Poppins({
   subsets: ['latin'],
   variable: '--font-poppins',
   weight: ['300', '400', '500', '600', '700', '800'],
-  fallback: ['system-ui', 'sans-serif'],  // ← ADD THIS
-  preload: false,  // ← ADD THIS
+  fallback: ['system-ui', 'sans-serif'],
+  preload: false,
 })
+
 export const metadata: Metadata = {
   title: 'Darlington Okorie | Full-Stack Software Developer',
   description: 'Darlington Okorie - Full-Stack Software Developer specializing in React, Node.js, Laravel, and modern web technologies. Founder of DevdarlMedia.',
@@ -31,6 +31,14 @@ export const metadata: Metadata = {
     title: 'Darlington Okorie | Full-Stack Software Developer',
     description: 'Expert software development services by Darlington Okorie. Specializing in modern web and mobile technologies.',
     type: 'website',
+  },
+  icons: {
+    icon: [
+      { url: '/images/logowhite.png', media: '(prefers-color-scheme: dark)' },
+      { url: '/images/logoblack.png', media: '(prefers-color-scheme: light)' },
+    ],
+    shortcut: '/images/logowhite.png',
+    apple: '/images/logowhite.png',
   },
 }
 

@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description: 'Learn full-stack development with courses by Darlington Okorie.',
 }
 
+export const revalidate = 3600 // ISR: revalidate every hour
+
 interface Course {
   id: number
   title: string
@@ -32,11 +34,14 @@ async function getCourses(): Promise<Course[]> {
     }
 
     const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+    const timeout = setTimeout(() => controller.abort(), 5000) // Reduced to 5 seconds
 
     const res = await fetch(`${apiUrl}/api/courses?status=published`, {
       signal: controller.signal,
       next: { revalidate: 3600 }, // Cache for 1 hour
+      headers: {
+        'Accept': 'application/json',
+      }
     })
     
     clearTimeout(timeout)
@@ -49,7 +54,8 @@ async function getCourses(): Promise<Course[]> {
     const data = await res.json()
     return data.data ?? data ?? []
   } catch (error) {
-    console.error('Failed to fetch courses:', error)
+    console.error('Failed to fetch courses:', error instanceof Error ? error.message : error)
+    // Return empty array instead of throwing to prevent build failure
     return []
   }
 }

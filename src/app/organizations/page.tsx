@@ -1,9 +1,7 @@
-import type { Metadata } from 'next'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'Organizations | Darlington Okorie',
-  description: 'Organizations and companies Darlington Okorie has worked with.',
-}
+import { useState, useEffect } from 'react'
+import { Briefcase, Calendar, ExternalLink, Building2 } from 'lucide-react'
 
 interface Organization {
   id: number
@@ -18,46 +16,61 @@ interface Organization {
   is_current: boolean
 }
 
-async function getOrganizations(): Promise<Organization[]> {
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL
-    
-    // If API URL is not configured, return empty array (shows "coming soon")
-    if (!apiUrl) {
-      console.warn('NEXT_PUBLIC_API_URL is not configured. Add it to .env.local')
-      return []
+export default function OrganizationsPage() {
+  const [orgs, setOrgs] = useState<Organization[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    async function fetchOrganizations() {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL
+        if (!apiUrl) {
+          console.warn('API URL not configured')
+          setOrgs([])
+          setLoading(false)
+          return
+        }
+
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 5000) // 5 second timeout
+
+        const res = await fetch(`${apiUrl}/api/organizations`, {
+          signal: controller.signal,
+          next: { revalidate: 3600 }
+        })
+        
+        clearTimeout(timeout)
+        
+        if (!res.ok) throw new Error('Failed to fetch')
+        
+        const data = await res.json()
+        setOrgs(data.data ?? data ?? [])
+      } catch (err) {
+        console.error('Failed to fetch organizations:', err)
+        setError(true)
+      } finally {
+        setLoading(false)
+      }
     }
 
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+    fetchOrganizations()
+  }, [])
 
-    const res = await fetch(`${apiUrl}/api/organizations`, {
-      signal: controller.signal,
-      next: { revalidate: 3600 }, // Cache for 1 hour
-    })
-    
-    clearTimeout(timeout)
-    
-    if (!res.ok) {
-      console.error(`API responded with status: ${res.status}`)
-      return []
-    }
-    
-    const data = await res.json()
-    return data.data ?? data ?? []
-  } catch (error) {
-    console.error('Failed to fetch organizations:', error)
-    return []
+  if (loading) {
+    return (
+      <main className="pt-24 pb-16 min-h-screen bg-white dark:bg-brand-black">
+        <div className="container-custom text-center py-24">
+          <div className="w-12 h-12 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-500 dark:text-gray-400">Loading organizations...</p>
+        </div>
+      </main>
+    )
   }
-}
-
-export default async function OrganizationsPage() {
-  const orgs = await getOrganizations()
 
   return (
     <main className="pt-24 pb-16 min-h-screen bg-white dark:bg-brand-black transition-colors duration-300">
       <div className="container-custom">
-
         {/* Header */}
         <div className="text-center mb-16">
           <span className="text-xs font-semibold text-primary uppercase tracking-widest border border-primary/30 px-3 py-1 rounded-full bg-primary/5">
@@ -71,7 +84,7 @@ export default async function OrganizationsPage() {
           </p>
         </div>
 
-        {orgs.length === 0 ? (
+        {error || orgs.length === 0 ? (
           <div className="text-center py-24">
             <div className="text-6xl mb-4">🏢</div>
             <h3 className="text-xl font-semibold text-brand-black dark:text-white mb-2">Coming soon</h3>
@@ -96,9 +109,10 @@ export default async function OrganizationsPage() {
                                 bg-gradient-to-br from-primary/20 to-brand-dark/20
                                 flex items-center justify-center shadow-md">
                   {org.logo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={org.logo} alt={org.name} className="w-full h-full object-contain p-1" />
                   ) : (
-                    <span className="text-2xl">🏢</span>
+                    <Building2 className="w-8 h-8 text-primary/60" />
                   )}
                 </div>
 
@@ -116,7 +130,8 @@ export default async function OrganizationsPage() {
                   </div>
 
                   <p className="text-primary text-sm font-medium mb-1">{org.role}</p>
-                  <p className="text-xs text-gray-400 mb-3">
+                  <p className="text-xs text-gray-400 mb-3 flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
                     {org.start_year} — {org.is_current ? 'Present' : org.end_year}
                     {org.type && ` · ${org.type}`}
                   </p>
@@ -127,7 +142,7 @@ export default async function OrganizationsPage() {
                   {org.website && org.website !== '#' && (
                     <a href={org.website} target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-primary text-xs font-medium mt-3 hover:opacity-80 transition-opacity">
-                      Visit Website →
+                      Visit Website <ExternalLink className="w-3 h-3" />
                     </a>
                   )}
                 </div>

@@ -154,14 +154,14 @@ export default function Hero() {
                 <div className="relative w-72 h-80 md:w-80 md:h-96 rounded-2xl overflow-hidden
                                 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-brand-black dark:to-brand-dark">
 
-                  {/* ── YOUR PHOTO: place it at /public/images/profile.jpg ── */}
+                  {/* ── YOUR PHOTO: place it at /public/images/profile.png ── */}
                   <Image
                     src="/images/profile.png"
                     alt="Darlington Okorie"
                     fill
                     priority
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 400px"
                     className="object-cover object-top"
-                    
                   />
 
                   {/* Fallback gradient shown behind image */}

@@ -74,6 +74,7 @@ export default function Navbar() {
               src={logoSrc}
               alt="Darlington Okorie Logo"
               fill
+              sizes="84px"
               className="object-contain transition-transform group-hover:scale-105"
               priority
               key={theme} // Force re-render when theme changes
